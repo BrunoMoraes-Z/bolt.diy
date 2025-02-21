@@ -71,6 +71,11 @@ const getPackageJson = () => {
 const pkg = getPackageJson();
 const gitInfo = getGitInfo();
 
+// Pega os hosts da variável de ambiente e divide em uma array
+const allowedHosts = (process.env.VITE_ALLOWED_HOSTS || 'localhost')
+  .split(',')
+  .map((host) => host.trim());
+
 export default defineConfig((config) => {
   return {
     define: {
@@ -90,11 +95,12 @@ export default defineConfig((config) => {
       __PKG_PEER_DEPENDENCIES: JSON.stringify(pkg.peerDependencies),
       __PKG_OPTIONAL_DEPENDENCIES: JSON.stringify(pkg.optionalDependencies),
     },
+    server: {
+      host: true,
+      allowedHosts,
+    },
     build: {
       target: 'esnext',
-    },
-    server: {
-      allowedHosts: "all",
     },
     plugins: [
       nodePolyfills({
